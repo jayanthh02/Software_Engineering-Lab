@@ -20,6 +20,8 @@ from game.renderer import (
 )
 
 LANE_SPEEDS = [1.5, -2, 2, -2.5, 1.5, -2]
+TESTING_MODE = True
+ATTEMPT_TIME = 5 if TESTING_MODE else 30
 
 
 class GameEngine:
@@ -31,6 +33,9 @@ class GameEngine:
         # Goal message state
         self.won = False
         self.goal_message_time = 0
+
+        # Countdown timer state
+        self.attempt_start_time = pygame.time.get_ticks()
 
         self._build_entities()
 
@@ -67,13 +72,11 @@ class GameEngine:
 
                 for n in range(count):
                     offset = phase + n * spacing
-
                     x = (
                         offset
                         if speed > 0
                         else WIDTH - offset - vehicle_width
                     )
-
                     positions.append(x)
 
                     if not (
@@ -104,6 +107,7 @@ class GameEngine:
             self.score = 0
             self.won = False
             self.goal_message_time = 0
+            self.attempt_start_time = pygame.time.get_ticks()
             self._build_entities()
             return
 
@@ -121,43 +125,53 @@ class GameEngine:
             self.frog.move(1, 0)
 
     def update(self):
-        # Stop gameplay after all lives are lost.
         if self.game_over:
             return
 
+        current_time = pygame.time.get_ticks()
+
         # Hide the goal message after one second.
         if self.won:
-            elapsed = (
-                pygame.time.get_ticks() - self.goal_message_time
-            )
-
+            elapsed = current_time - self.goal_message_time
             if elapsed >= 1000:
                 self.won = False
 
-        # Move all vehicles.
+        # Check whether the current attempt has timed out.
+        elapsed_seconds = (
+            current_time - self.attempt_start_time
+        ) // 1000
+
+        if elapsed_seconds >= ATTEMPT_TIME:
+            self.lose_life()
+            return
+
+        # Move vehicles.
         for vehicle in self.vehicles:
             vehicle.update(road_width_px=WIDTH)
 
         # Handle vehicle collisions.
         if check_collision(self.frog, self.vehicles):
-            self.lives -= 1
-
-            # Hide any previous goal message after a collision.
-            self.won = False
-
-            if self.lives <= 0:
-                self.game_over = True
-            else:
-                self.frog.reset()
-
+            self.lose_life()
             return
 
         # Handle successful goal completion.
         if self.frog.row == GOAL_ROW:
             self.score += 1
             self.won = True
-            self.goal_message_time = pygame.time.get_ticks()
+            self.goal_message_time = current_time
+
             self.frog.reset()
+            self.attempt_start_time = current_time
+
+    def lose_life(self):
+        self.lives -= 1
+        self.won = False
+
+        if self.lives <= 0:
+            self.game_over = True
+        else:
+            self.frog.reset()
+            self.attempt_start_time = pygame.time.get_ticks()
 
     def draw(self, surface, font):
         from game import renderer
@@ -174,7 +188,18 @@ class GameEngine:
             surface, font, f"Score: {self.score}", (10, 34)
         )
 
-        # Show success feedback temporarily.
+        # Display remaining attempt time.
+        elapsed_seconds = (
+            pygame.time.get_ticks() - self.attempt_start_time
+        ) // 1000
+
+        remaining = max(0, ATTEMPT_TIME - elapsed_seconds)
+
+        renderer.draw_text(
+            surface, font, f"Time: {remaining}", (10, 58)
+        )
+
+        # Temporary goal success message.
         if self.won:
             renderer.draw_banner(
                 surface,
@@ -182,7 +207,7 @@ class GameEngine:
                 f"GOAL REACHED! Score: {self.score}",
             )
 
-        # Game Over takes priority over the goal message.
+        # Game Over takes priority.
         if self.game_over:
             renderer.draw_banner(
                 surface,
