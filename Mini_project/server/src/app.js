@@ -10,6 +10,7 @@ app.use(express.json());
 app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
 
 app.use('/api/auth', authRoutes);
+app.use('/api/notifications', require('./routes/notifications')); // SCP-16
 
 // Unknown route
 app.use((req, res) => {
