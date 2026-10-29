@@ -4,6 +4,7 @@ import { ALL_ROLES } from './auth/roles';
 import Layout from './components/Layout';
 import LoginPage from './pages/LoginPage';
 import HomePage from './pages/HomePage';
+import NotificationsPage from './pages/NotificationsPage';
 
 /*
  * THE PAGE LIST. Add ONE object here for each page you build.
@@ -18,6 +19,7 @@ import HomePage from './pages/HomePage';
  */
 const pages = [
   { path: '/home', label: 'Home', roles: ALL_ROLES, element: <HomePage /> },
+  { path: '/notifications', label: 'Notifications', roles: ALL_ROLES, element: <NotificationsPage /> },
 ];
 
 export default function App() {
