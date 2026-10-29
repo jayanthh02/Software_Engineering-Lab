@@ -1,10 +1,11 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import ProtectedRoute from './auth/ProtectedRoute';
-import { ALL_ROLES } from './auth/roles';
+import { ALL_ROLES, ROLES } from './auth/roles';
 import Layout from './components/Layout';
 import LoginPage from './pages/LoginPage';
 import HomePage from './pages/HomePage';
 import NotificationsPage from './pages/NotificationsPage';
+import ApprovalInboxPage from './pages/ApprovalInboxPage';
 
 /*
  * THE PAGE LIST. Add ONE object here for each page you build.
@@ -20,6 +21,12 @@ import NotificationsPage from './pages/NotificationsPage';
 const pages = [
   { path: '/home', label: 'Home', roles: ALL_ROLES, element: <HomePage /> },
   { path: '/notifications', label: 'Notifications', roles: ALL_ROLES, element: <NotificationsPage /> },
+  {
+    path: '/approvals',
+    label: 'Approval Inbox',
+    roles: [ROLES.FACULTY, ROLES.FINANCE, ROLES.DEAN],
+    element: <ApprovalInboxPage />,
+  },
 ];
 
 export default function App() {
