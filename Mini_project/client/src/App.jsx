@@ -6,7 +6,7 @@ import LoginPage from './pages/LoginPage';
 import HomePage from './pages/HomePage';
 import NotificationsPage from './pages/NotificationsPage';
 import ApprovalInboxPage from './pages/ApprovalInboxPage';
-
+import ApprovalHistoryPage from './pages/ApprovalHistoryPage';
 /*
  * THE PAGE LIST. Add ONE object here for each page you build.
  * It creates the route AND the menu link, and the menu only shows
@@ -26,7 +26,14 @@ const pages = [
     label: 'Approval Inbox',
     roles: [ROLES.FACULTY, ROLES.FINANCE, ROLES.DEAN],
     element: <ApprovalInboxPage />,
+    
   },
+  {
+    path: '/proposals/:id/history',
+    label: 'Approval History',
+    roles: [ROLES.FACULTY, ROLES.FINANCE, ROLES.DEAN],
+    element: <ApprovalHistoryPage />,
+  }
 ];
 
 export default function App() {

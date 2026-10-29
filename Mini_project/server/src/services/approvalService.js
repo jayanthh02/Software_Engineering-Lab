@@ -92,4 +92,24 @@ async function decide({ proposalId, decision, comment, user }) {
   return { proposalId, newStatus };
 }
 
-module.exports = { inbox, decide, isApprover, ApprovalError, APPROVER_ROLES };
+async function getApprovalHistory(proposalId, user) {
+  if (!isApprover(user.role)) {
+    throw new ApprovalError(403, 'FORBIDDEN', 'Only approvers can view approval history');
+  }
+
+  const proposal = await approvalRepo.findProposalById(proposalId);
+  if (!proposal) {
+    throw new ApprovalError(404, 'NOT_FOUND', 'Proposal not found');
+  }
+
+  return approvalRepo.getApprovalHistory(proposalId);
+}
+
+module.exports = {
+  inbox,
+  decide,
+  isApprover,
+  ApprovalError,
+  APPROVER_ROLES,
+  getApprovalHistory,
+};

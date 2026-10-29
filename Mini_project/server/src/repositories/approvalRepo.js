@@ -55,4 +55,21 @@ async function recordDecision({ proposalId, fromStatus, toStatus, stage, approve
   }
 }
 
-module.exports = { listByStatus, findProposalById, recordDecision };
+async function getApprovalHistory(proposalId) {
+  const [rows] = await pool.execute(
+    `SELECT ah.proposal_id, ah.stage, ah.approver_id, ah.decision,
+            ah.comment, ah.created_at
+       FROM approval_history ah
+      WHERE ah.proposal_id = ?
+      ORDER BY ah.created_at ASC`,
+    [proposalId]
+  );
+  return rows;
+}
+
+module.exports = {
+  listByStatus,
+  findProposalById,
+  recordDecision,
+  getApprovalHistory,
+};
