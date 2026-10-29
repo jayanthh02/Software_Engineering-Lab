@@ -23,7 +23,30 @@ router.get('/approvals/inbox', authenticate, requireApprover, async (req, res, n
     return next(err);
   }
 });
+// GET /api/proposals/:id/history
+router.get('/proposals/:id/history', authenticate, requireApprover, async (req, res, next) => {
+  try {
+    const proposalId = Number(req.params.id);
 
+    if (!Number.isInteger(proposalId) || proposalId <= 0) {
+      return res.status(400).json({
+        error: 'VALIDATION_ERROR',
+        message: 'Invalid proposal id',
+      });
+    }
+
+    const history = await approvalService.getApprovalHistory(proposalId, req.user);
+    return res.status(200).json(history);
+  } catch (err) {
+    if (err instanceof approvalService.ApprovalError) {
+      return res.status(err.status).json({
+        error: err.code,
+        message: err.message,
+      });
+    }
+    return next(err);
+  }
+});
 // POST /api/proposals/:id/decision  { decision: "APPROVE" | "REJECT", comment }
 //   ->  200 { proposalId, newStatus }
 //   400 invalid input / comment required on reject, 403 wrong role or not current stage,
