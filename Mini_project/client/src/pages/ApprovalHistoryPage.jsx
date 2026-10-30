@@ -19,7 +19,8 @@ export default function ApprovalHistoryPage() {
       .catch((err) => {
         if (active) {
           setError(
-            err.response?.data?.message || 'Could not load approval history.'
+            err.response?.data?.message ||
+              'Could not load approval history.'
           );
         }
       })
@@ -59,11 +60,11 @@ export default function ApprovalHistoryPage() {
                 <td>{item.stage}</td>
                 <td>{item.decision}</td>
                 <td>{item.approver_id}</td>
-                <td>{item.comment || '—'}</td>
+                <td>{item.comment || '-'}</td>
                 <td>
                   {item.created_at
                     ? new Date(item.created_at).toLocaleString()
-                    : '—'}
+                    : '-'}
                 </td>
               </tr>
             ))}
