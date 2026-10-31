@@ -1,0 +1,6 @@
+************* Module library_system
+library_system.py:118:0: C0304: Final newline missing (missing-final-newline)
+
+------------------------------------------------------------------
+Your code has been rated at 9.86/10 (previous run: 6.07/10, +3.79)
+

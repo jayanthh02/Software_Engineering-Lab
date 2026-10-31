@@ -1,3 +1,8 @@
+"""Library fine and book renewal system.
+
+Tracks which student borrowed which book, calculates overdue fines,
+handles renewals, and saves or loads loan records as JSON.
+"""
 
 import ast
 import json
@@ -107,6 +112,7 @@ def main():
     save_records()
     load_records()
     print_report()
+
 
 if __name__ == "__main__":
     main()

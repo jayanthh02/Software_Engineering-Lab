@@ -1,0 +1,27 @@
+************* Module library_system
+library_system.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+library_system.py:9:0: C0116: Missing function or method docstring (missing-function-docstring)
+library_system.py:9:0: W0102: Dangerous default value [] as argument (dangerous-default-value)
+library_system.py:14:10: C0209: Formatting a regular string which could be an f-string (consider-using-f-string)
+library_system.py:16:0: C0116: Missing function or method docstring (missing-function-docstring)
+library_system.py:21:4: W0702: No exception type(s) specified (bare-except)
+library_system.py:24:0: C0116: Missing function or method docstring (missing-function-docstring)
+library_system.py:27:0: C0116: Missing function or method docstring (missing-function-docstring)
+library_system.py:27:0: C0103: Function name "renewBook" doesn't conform to snake_case naming style (invalid-name)
+library_system.py:28:4: W0603: Using the global statement (global-statement)
+library_system.py:33:0: C0116: Missing function or method docstring (missing-function-docstring)
+library_system.py:34:8: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
+library_system.py:35:4: W0603: Using the global statement (global-statement)
+library_system.py:34:8: R1732: Consider using 'with' for resource-allocating operations (consider-using-with)
+library_system.py:39:0: C0116: Missing function or method docstring (missing-function-docstring)
+library_system.py:40:8: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
+library_system.py:40:8: R1732: Consider using 'with' for resource-allocating operations (consider-using-with)
+library_system.py:44:0: C0116: Missing function or method docstring (missing-function-docstring)
+library_system.py:45:11: W0123: Use of eval (eval-used)
+library_system.py:47:0: C0116: Missing function or method docstring (missing-function-docstring)
+library_system.py:52:0: C0116: Missing function or method docstring (missing-function-docstring)
+library_system.py:2:0: W0611: Unused import os (unused-import)
+
+------------------------------------------------------------------
+Your code has been rated at 6.07/10 (previous run: 6.07/10, +0.00)
+
