@@ -36,4 +36,10 @@ router.post('/logout', authenticate, (req, res) => {
   res.status(200).json({ message: 'Logged out' });
 });
 
+// GET /api/auth/me  ->  200 { user }   (any logged-in role)
+// The client can call this to confirm who the token belongs to.
+router.get('/me', authenticate, (req, res) => {
+  res.status(200).json({ user: req.user });
+});
+
 module.exports = router;
