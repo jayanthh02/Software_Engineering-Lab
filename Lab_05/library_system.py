@@ -108,6 +108,5 @@ def main():
     load_records()
     print_report()
 
-
 if __name__ == "__main__":
     main()
