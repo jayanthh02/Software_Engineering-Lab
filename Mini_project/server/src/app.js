@@ -11,6 +11,7 @@ app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
 
 app.use('/api/auth', authRoutes);
 app.use('/api/notifications', require('./routes/notifications')); // SCP-16
+app.use('/api/proposals', require('./routes/proposals')); // SCP-10: POST /api/proposals
 app.use('/api', require('./routes/approvals')); // SCP-14: /api/approvals/inbox, /api/proposals/:id/decision
 
 // Unknown route
