@@ -126,4 +126,73 @@ async function submit(body, user) {
   return { proposalId, status: 'PENDING_FACULTY' };
 }
 
-module.exports = { submit, validate, ProposalError };
+function toListItem(p) {
+  return {
+    id: p.id,
+    eventName: p.event_name,
+    eventDate: p.event_date,
+    venue: p.venue,
+    expectedAttendance: p.expected_attendance,
+    budget: Number(p.budget),
+    description: p.description,
+    status: p.status,
+    rejectionComment: p.rejection_comment || null,
+  };
+}
+
+// The Club Lead's own club's proposals (optionally only one status).
+async function listMine(user, status) {
+  if (!user.clubId) {
+    throw new ProposalError(403, 'NO_CLUB', 'Your account is not linked to a club');
+  }
+  const rows = await proposalRepo.listByClub(user.clubId, status);
+  return rows.map(toListItem);
+}
+
+/**
+ * SCP-F-004: edit a REJECTED proposal and resubmit it. Status goes back to PENDING_FACULTY.
+ * Throws ProposalError: 400 field errors, 403 other club, 404 not found,
+ * 409 not rejected (approved and in-review proposals are read-only).
+ * Returns { proposalId, status }.
+ */
+async function resubmit(proposalId, body, user) {
+  const { fields, values } = validate(body);
+  if (Object.keys(fields).length > 0) {
+    throw new ProposalError(400, 'VALIDATION_ERROR', 'Some fields are missing or invalid', fields);
+  }
+  if (!user.clubId) {
+    throw new ProposalError(403, 'NO_CLUB', 'Your account is not linked to a club');
+  }
+
+  const proposal = await proposalRepo.findById(proposalId);
+  if (!proposal) {
+    throw new ProposalError(404, 'NOT_FOUND', 'Proposal not found');
+  }
+  if (proposal.club_id !== user.clubId) {
+    throw new ProposalError(403, 'FORBIDDEN', 'This proposal belongs to another club');
+  }
+  if (proposal.status !== 'REJECTED') {
+    throw new ProposalError(409, 'NOT_EDITABLE', 'Only a rejected proposal can be edited and resubmitted');
+  }
+
+  const updated = await proposalRepo.resubmit(proposalId, values);
+  if (!updated) {
+    // Status changed between the check and the update.
+    throw new ProposalError(409, 'NOT_EDITABLE', 'Only a rejected proposal can be edited and resubmitted');
+  }
+
+  // The proposal is already saved; a notification problem must not turn it into an error.
+  try {
+    await notificationService.notifyStatusChange(
+      { id: proposalId, eventName: values.eventName, clubLeadId: proposal.club_lead_id },
+      'REJECTED',
+      'PENDING_FACULTY'
+    );
+  } catch (err) {
+    console.error('Notification failed:', err.message);
+  }
+
+  return { proposalId, status: 'PENDING_FACULTY' };
+}
+
+module.exports = { submit, resubmit, listMine, validate, ProposalError };

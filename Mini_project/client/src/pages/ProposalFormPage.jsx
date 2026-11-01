@@ -5,7 +5,7 @@ import api from '../api';
 // The server does the real validation; this form only gives quick feedback
 // and shows the server's field errors next to each field.
 
-const EMPTY = {
+export const EMPTY = {
   eventName: '',
   eventDate: '',
   venue: '',
@@ -14,16 +14,16 @@ const EMPTY = {
   description: '',
 };
 
-const MAX = { eventName: 150, venue: 150, description: 5000 };
+export const MAX = { eventName: 150, venue: 150, description: 5000 };
 
-function todayISO() {
+export function todayISO() {
   const d = new Date();
   const month = String(d.getMonth() + 1).padStart(2, '0');
   const day = String(d.getDate()).padStart(2, '0');
   return `${d.getFullYear()}-${month}-${day}`;
 }
 
-function validate(v) {
+export function validate(v) {
   const e = {};
   if (!v.eventName.trim()) e.eventName = 'Event name is required';
   if (!v.eventDate) e.eventDate = 'Event date is required';
@@ -41,7 +41,7 @@ function validate(v) {
   return e;
 }
 
-function Field({ id, label, error, children }) {
+export function Field({ id, label, error, children }) {
   return (
     <div>
       <label htmlFor={id}>{label}</label>
