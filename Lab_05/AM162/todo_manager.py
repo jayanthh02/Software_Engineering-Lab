@@ -43,12 +43,11 @@ def pending_tasks():
 
 
 def find_task(keyword):
-    """Return the id of the first task whose title contains the keyword, or None."""
+    """Return the id of the first task whose title has the keyword, or None."""
     for task_id, task in tasks.items():
         if keyword.lower() in task["title"].lower():
             return task_id
     return None
-
 
 
 def save_tasks(file_name="tasks_data.json"):
@@ -100,12 +99,12 @@ def main():
     complete_task(99)
     print("Pending tasks:", pending_tasks())
     print("Task id for 'plumber':", find_task("plumber"))
-    print("Task id for 'gym':", find_task("gym")) # returns None silently
+    print("Task id for 'gym':", find_task("gym"))  # None: no such task
     suggestion = suggest_next()
     print("Try this next:", suggestion)
     save_tasks()
     restored = load_tasks()
-    print("Tasks restored from file:",len(restored))
+    print("Tasks restored from file:", len(restored))
     export_json()
     print("Exported tasks to tasks.json")
 
