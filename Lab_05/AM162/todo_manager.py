@@ -1,11 +1,12 @@
 import json
-import os
-import pickle
-import random
+import re
+import smtplib
 from datetime import datetime
+from email.message import EmailMessage
 
 tasks = {}
 PRIORITY_ORDER = {"high": 0, "medium": 1, "low": 2}
+EMAIL_PATTERN = re.compile(r"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$")
 
 
 def addTask(title, priority="medium", labels=[]):
@@ -37,14 +38,16 @@ def findTask(keyword):
 
 
 
-def saveTasks(fileName="tasks.pkl"):
-    with open(fileName, "wb") as f:
-        pickle.dump(tasks, f)
+def saveTasks(fileName="tasks_data.json"):
+    with open(fileName, "w") as f:
+        json.dump(tasks, f)
 
 
-def loadTasks(fileName="tasks.pkl"):
-    with open(fileName, "rb") as f:
-        return pickle.load(f)
+def loadTasks(fileName="tasks_data.json"):
+    with open(fileName, "r") as f:
+        data = json.load(f)
+    # JSON object keys are always strings; task ids are ints.
+    return {int(taskId): task for taskId, task in data.items()}
 
 
 def exportJson(fileName="tasks.json"):
@@ -54,7 +57,19 @@ def exportJson(fileName="tasks.json"):
 
 def remindByEmail(address):
     # Helper kept for the lab: not called by the demo
-    os.system("mail -s 'Pending tasks' " + address + " < tasks.json")
+    if not EMAIL_PATTERN.match(address):
+        raise ValueError("Invalid email address: " + address)
+    message = EmailMessage()
+    message["Subject"] = "Pending tasks"
+    message["To"] = address
+    message.set_content(json.dumps(tasks, indent=2))
+    with smtplib.SMTP("localhost") as server:
+        server.send_message(message)
+
+
+def suggestNext():
+    pending = pendingTasks()
+    return pending[0] if pending else None
 
 
 def main():
@@ -67,7 +82,7 @@ def main():
     print("Pending tasks:", pendingTasks())
     print("Task id for 'plumber':", findTask("plumber"))
     print("Task id for 'gym':", findTask("gym")) # returns None silently
-    suggestion = random.choice(pendingTasks())
+    suggestion = suggestNext()
     print("Try this next:", suggestion)
     saveTasks()
     restored = loadTasks()
