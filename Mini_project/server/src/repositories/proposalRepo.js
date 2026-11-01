@@ -16,7 +16,7 @@ async function create({ clubId, clubLeadId, eventName, eventDate, venue, expecte
 }
 
 // SCP-F-004: proposals of one club, newest first, with the comment of the most recent
-// rejection (so the Club Lead sees why it was rejected). `status` is optional.
+// rejection and the stage that rejected it (SCP-F-004 / SCP-F-005). `status` is optional.
 // event_date is returned as a plain YYYY-MM-DD string so no timezone can shift the day.
 async function listByClub(clubId, status) {
   const params = [clubId];
@@ -30,7 +30,10 @@ async function listByClub(clubId, status) {
             p.venue, p.expected_attendance, p.budget, p.description, p.status, p.created_at, p.updated_at,
             (SELECT ah.comment FROM approval_history ah
               WHERE ah.proposal_id = p.id AND ah.decision = 'REJECT'
-              ORDER BY ah.created_at DESC, ah.id DESC LIMIT 1) AS rejection_comment
+              ORDER BY ah.created_at DESC, ah.id DESC LIMIT 1) AS rejection_comment,
+            (SELECT ah.stage FROM approval_history ah
+              WHERE ah.proposal_id = p.id AND ah.decision = 'REJECT'
+              ORDER BY ah.created_at DESC, ah.id DESC LIMIT 1) AS rejection_stage
        FROM proposals p
       WHERE ${where}
       ORDER BY p.created_at DESC, p.id DESC`,

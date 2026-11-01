@@ -126,7 +126,20 @@ async function submit(body, user) {
   return { proposalId, status: 'PENDING_FACULTY' };
 }
 
+// SCP-F-005: what the Club Lead sees for each status. `stage` is who must act next
+// (null once the proposal is finished).
+const STATUS_INFO = {
+  PENDING_FACULTY: { label: 'Pending Faculty', stage: 'Faculty Coordinator' },
+  PENDING_FINANCE: { label: 'Pending Finance', stage: 'Finance Officer' },
+  PENDING_DEAN: { label: 'Pending Dean', stage: 'Dean' },
+  APPROVED: { label: 'Approved', stage: null },
+  REJECTED: { label: 'Rejected', stage: null },
+};
+
+const STAGE_NAME = { FACULTY: 'Faculty Coordinator', FINANCE: 'Finance Officer', DEAN: 'Dean' };
+
 function toListItem(p) {
+  const info = STATUS_INFO[p.status] || { label: p.status, stage: null };
   return {
     id: p.id,
     eventName: p.event_name,
@@ -136,7 +149,12 @@ function toListItem(p) {
     budget: Number(p.budget),
     description: p.description,
     status: p.status,
+    statusLabel: info.label,
+    currentStage: info.stage,
     rejectionComment: p.rejection_comment || null,
+    rejectedBy: p.rejection_stage ? STAGE_NAME[p.rejection_stage] || null : null,
+    submittedAt: p.created_at,
+    updatedAt: p.updated_at,
   };
 }
 
