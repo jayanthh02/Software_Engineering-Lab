@@ -8,6 +8,7 @@ import NotificationsPage from './pages/NotificationsPage';
 import ApprovalInboxPage from './pages/ApprovalInboxPage';
 import ApprovalHistoryPage from './pages/ApprovalHistoryPage';
 import ProposalFormPage from './pages/ProposalFormPage';
+import EditProposalPage from './pages/EditProposalPage';
 /*
  * THE PAGE LIST. Add ONE object here for each page you build.
  * It creates the route AND the menu link, and the menu only shows
@@ -23,6 +24,7 @@ const pages = [
   { path: '/home', label: 'Home', roles: ALL_ROLES, element: <HomePage /> },
   { path: '/notifications', label: 'Notifications', roles: ALL_ROLES, element: <NotificationsPage /> },
   { path: '/proposals/new', label: 'New Proposal', roles: [ROLES.CLUB_LEAD], element: <ProposalFormPage /> },
+  { path: '/proposals/edit', label: 'Edit Rejected', roles: [ROLES.CLUB_LEAD], element: <EditProposalPage /> },
   {
     path: '/approvals',
     label: 'Approval Inbox',
