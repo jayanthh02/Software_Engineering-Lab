@@ -12,7 +12,9 @@ app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
 app.use('/api/auth', authRoutes);
 app.use('/api/notifications', require('./routes/notifications')); // SCP-16
 app.use('/api/proposals', require('./routes/proposals')); // SCP-10: POST /api/proposals
-app.use('/api', require('./routes/approvals')); // SCP-14: /api/approvals/inbox, /api/proposals/:id/decision
+app.use('/api', require('./routes/approvals')); 
+app.use('/api/registrations', require('./routes/registrations')); // SCP-17
+// SCP-14: /api/approvals/inbox, /api/proposals/:id/decision
 
 // Unknown route
 app.use((req, res) => {

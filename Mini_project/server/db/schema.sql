@@ -65,3 +65,23 @@ CREATE TABLE IF NOT EXISTS approval_history (
   CONSTRAINT fk_history_approver FOREIGN KEY (approver_id) REFERENCES users(id),
   INDEX idx_history_proposal (proposal_id, created_at)
 );
+
+
+-- SCP-17: Student event registrations
+CREATE TABLE IF NOT EXISTS registrations (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  proposal_id INT NOT NULL,
+  student_id INT NOT NULL,
+  registered_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+  CONSTRAINT fk_registrations_proposal
+    FOREIGN KEY (proposal_id) REFERENCES proposals(id),
+
+  CONSTRAINT fk_registrations_student
+    FOREIGN KEY (student_id) REFERENCES users(id),
+
+  CONSTRAINT uq_registration_student_event
+    UNIQUE (proposal_id, student_id),
+
+  INDEX idx_registrations_proposal (proposal_id)
+);
