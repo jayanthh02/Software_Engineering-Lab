@@ -14,6 +14,7 @@ app.use('/api/notifications', require('./routes/notifications')); // SCP-16
 app.use('/api/proposals', require('./routes/proposals')); // SCP-10: POST /api/proposals
 app.use('/api', require('./routes/approvals')); 
 app.use('/api/registrations', require('./routes/registrations')); // SCP-17
+app.use('/api/dashboard', require('./routes/dashboard')); // SCP-21
 // SCP-14: /api/approvals/inbox, /api/proposals/:id/decision
 
 // Unknown route
