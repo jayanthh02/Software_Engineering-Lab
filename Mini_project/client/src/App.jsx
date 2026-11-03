@@ -10,6 +10,7 @@ import ApprovalHistoryPage from './pages/ApprovalHistoryPage';
 import ProposalFormPage from './pages/ProposalFormPage';
 import EditProposalPage from './pages/EditProposalPage';
 import MyProposalsPage from './pages/MyProposalsPage';
+import DashboardPage from './pages/DashboardPage';
 /*
  * THE PAGE LIST. Add ONE object here for each page you build.
  * It creates the route AND the menu link, and the menu only shows
@@ -39,7 +40,8 @@ const pages = [
     label: 'Approval History',
     roles: [ROLES.FACULTY, ROLES.FINANCE, ROLES.DEAN],
     element: <ApprovalHistoryPage />,
-  }
+  },
+  { path: '/dashboard', label: 'Dashboard', roles: [ROLES.ADMIN, ROLES.CLUB_LEAD], element: <DashboardPage /> },
 ];
 
 export default function App() {
