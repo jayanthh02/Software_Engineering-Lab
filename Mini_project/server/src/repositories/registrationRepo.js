@@ -1,6 +1,8 @@
 
 const db = require('../db');
 
+const ticketService = require('../services/ticketService');
+
 async function register(proposalId, studentId) {
   const connection = await db.getConnection();
 
@@ -60,13 +62,22 @@ async function register(proposalId, studentId) {
       [proposalId, studentId]
     );
 
+    const ticket = ticketService.createTicket(result.insertId);
+
+await connection.query(
+  `INSERT INTO tickets (registration_id, ticket_code, signature)
+   VALUES (?, ?, ?)`,
+  [result.insertId, ticket.ticketCode, ticket.signature]
+);
+
     await connection.commit();
 
     return {
-      registrationId: result.insertId,
-      proposalId,
-      registered: true,
-    };
+  registrationId: result.insertId,
+  proposalId,
+  registered: true,
+  ticket: ticket.qrPayload,
+};
   } catch (error) {
     await connection.rollback();
 

@@ -85,3 +85,15 @@ CREATE TABLE IF NOT EXISTS registrations (
 
   INDEX idx_registrations_proposal (proposal_id)
 );
+
+-- SCP-18: Unique HMAC-signed event tickets
+CREATE TABLE IF NOT EXISTS tickets (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  registration_id INT NOT NULL UNIQUE,
+  ticket_code CHAR(36) NOT NULL UNIQUE,
+  signature CHAR(64) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+  CONSTRAINT fk_tickets_registration
+    FOREIGN KEY (registration_id) REFERENCES registrations(id)
+);
