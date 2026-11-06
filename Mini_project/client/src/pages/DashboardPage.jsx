@@ -86,6 +86,34 @@ export default function DashboardPage() {
     setApplied(next);
   }
 
+  // SCP-F-015: download a CSV report. The budget report uses the same club and
+  // submitted-date filters as the dashboard, so its totals match the numbers above.
+  const [exporting, setExporting] = useState('');
+
+  async function exportCsv(report) {
+    setExporting(report);
+    setError('');
+    try {
+      const source = report === 'budget' ? applied : { clubId: applied.clubId };
+      const params = Object.fromEntries(
+        Object.entries(source).filter(([k, v]) => v !== '' && k !== 'status')
+      );
+      const res = await api.get(`/reports/${report}.csv`, { params, responseType: 'blob' });
+      const disposition = res.headers['content-disposition'] || '';
+      const name = /filename="([^"]+)"/.exec(disposition)?.[1] || `${report}-report.csv`;
+      const url = URL.createObjectURL(res.data);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = name;
+      link.click();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      setError('Could not export the report. Check the filters and try again.');
+    } finally {
+      setExporting('');
+    }
+  }
+
   return (
     <div className="card">
       <h2 style={{ marginTop: 0 }}>Dashboard</h2>
@@ -119,6 +147,17 @@ export default function DashboardPage() {
           <strong>{money.format(data.totals.approvedBudget)}</strong> · Pending budget{' '}
           <strong>{money.format(data.totals.pendingBudget)}</strong>
         </p>
+      )}
+
+      {isAdmin && (
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 12 }}>
+          <button type="button" onClick={() => exportCsv('budget')} disabled={exporting !== ''}>
+            {exporting === 'budget' ? 'Exporting...' : 'Export budget report (CSV)'}
+          </button>
+          <button type="button" onClick={() => exportCsv('attendance')} disabled={exporting !== ''}>
+            {exporting === 'attendance' ? 'Exporting...' : 'Export attendance report (CSV)'}
+          </button>
+        </div>
       )}
 
       {/* Filters */}

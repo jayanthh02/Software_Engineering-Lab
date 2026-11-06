@@ -16,6 +16,7 @@ app.use('/api', require('./routes/approvals'));
 app.use('/api/registrations', require('./routes/registrations')); // SCP-17
 app.use('/api/tickets', require('./routes/tickets')); // SCP-19: GET /api/tickets, GET /api/tickets/:id/qr
 app.use('/api/dashboard', require('./routes/dashboard')); // SCP-21
+app.use('/api/reports', require('./routes/reports')); // SCP-22: budget.csv, attendance.csv
 // SCP-14: /api/approvals/inbox, /api/proposals/:id/decision
 
 // Unknown route
