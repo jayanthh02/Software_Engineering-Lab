@@ -14,6 +14,8 @@ app.use('/api/notifications', require('./routes/notifications')); // SCP-16
 app.use('/api/proposals', require('./routes/proposals')); // SCP-10: POST /api/proposals
 app.use('/api', require('./routes/approvals')); 
 app.use('/api/registrations', require('./routes/registrations')); // SCP-17
+// SCP-20: POST /api/tickets/checkin. Must stay ABOVE /api/tickets, whose router is students-only.
+app.use('/api/tickets/checkin', require('./routes/checkins'));
 app.use('/api/tickets', require('./routes/tickets')); // SCP-19: GET /api/tickets, GET /api/tickets/:id/qr
 app.use('/api/dashboard', require('./routes/dashboard')); // SCP-21
 app.use('/api/reports', require('./routes/reports')); // SCP-22: budget.csv, attendance.csv

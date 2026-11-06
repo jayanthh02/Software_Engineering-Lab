@@ -97,3 +97,18 @@ CREATE TABLE IF NOT EXISTS tickets (
   CONSTRAINT fk_tickets_registration
     FOREIGN KEY (registration_id) REFERENCES registrations(id)
 );
+
+-- SCP-20: Check-in log. A row here means the ticket is USED.
+-- UNIQUE (ticket_id) makes a double check-in impossible, even if two scans arrive together.
+CREATE TABLE IF NOT EXISTS checkins (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  ticket_id INT NOT NULL UNIQUE,
+  checked_in_by INT NOT NULL,
+  checked_in_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+  CONSTRAINT fk_checkins_ticket
+    FOREIGN KEY (ticket_id) REFERENCES tickets(id),
+
+  CONSTRAINT fk_checkins_user
+    FOREIGN KEY (checked_in_by) REFERENCES users(id)
+);
