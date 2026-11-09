@@ -7,7 +7,7 @@ jest.mock('../src/repositories/reportRepo');
 jest.mock('../src/repositories/dashboardRepo');
 const reportRepo = require('../src/repositories/reportRepo');
 const dashboardRepo = require('../src/repositories/dashboardRepo');
-const { csvCell } = require('../src/services/reportService');
+const { csvCell, day } = require('../src/services/reportService');
 const app = require('../src/app');
 
 function token(role, clubId = null) {
@@ -165,6 +165,37 @@ describe('CSV safety (SCP-SR-004)', () => {
   test('numbers are not altered by the formula guard', () => {
     expect(csvCell(-5)).toBe('"-5"');
     expect(csvCell(null)).toBe('""');
+  });
+});
+
+describe('Report dates in IST (SCP-22 fix)', () => {
+  const originalTz = process.env.TZ;
+  beforeAll(() => {
+    process.env.TZ = 'Asia/Kolkata'; // the server runs in India
+  });
+  afterAll(() => {
+    process.env.TZ = originalTz;
+  });
+
+  test('a MySQL DATE (local midnight) keeps its calendar day', () => {
+    // mysql2 returns DATE 2026-11-16 as 16 Nov 00:00 IST = 15 Nov 18:30 UTC.
+    expect(day(new Date(2026, 10, 16))).toBe('2026-11-16');
+    expect(day('2026-11-16')).toBe('2026-11-16');
+    expect(day(null)).toBe('');
+  });
+
+  test('budget and attendance CSVs show the real event day', async () => {
+    reportRepo.budgetRows.mockResolvedValue([
+      { ...PROPOSALS[0], event_date: new Date(2026, 10, 16), created_at: new Date(2026, 10, 9, 0, 15) },
+    ]);
+    reportRepo.attendanceRows.mockResolvedValue([{ ...EVENTS[0], event_date: new Date(2026, 10, 16) }]);
+
+    const budget = parse((await get('budget.csv')).text);
+    const attendance = parse((await get('attendance.csv')).text);
+
+    expect(budget[1][3]).toBe('2026-11-16');
+    expect(budget[1][6]).toBe('2026-11-09'); // submitted just after midnight IST
+    expect(attendance[1][3]).toBe('2026-11-16');
   });
 });
 
