@@ -6,18 +6,44 @@ const ticketService = require('./ticketService');
 // This file never creates tickets or signs anything. It reads the ticket that
 // SCP-18 already stored and draws that same code as a QR image.
 
-async function listMine(studentId) {
+// MySQL DATE columns arrive as a Date at local midnight. Use the local parts
+// (not toISOString) so the date never shifts by a day in IST.
+function day(value) {
+  if (value instanceof Date) {
+    const mm = String(value.getMonth() + 1).padStart(2, '0');
+    const dd = String(value.getDate()).padStart(2, '0');
+    return `${value.getFullYear()}-${mm}-${dd}`;
+  }
+  return value ? String(value).slice(0, 10) : null;
+}
+
+// USED once checked in (SCP-20), EXPIRED after the event day, otherwise UPCOMING.
+function statusOf(eventDate, checkedInAt, today) {
+  if (checkedInAt) return 'USED';
+  if (eventDate && eventDate < today) return 'EXPIRED';
+  return 'UPCOMING';
+}
+
+async function listMine(studentId, now = new Date()) {
   const rows = await ticketRepo.listForStudent(studentId);
-  return rows.map((t) => ({
-    id: t.id,
-    registrationId: t.registration_id,
-    proposalId: t.proposal_id,
-    eventName: t.event_name,
-    eventDate: t.event_date,
-    venue: t.venue,
-    ticketCode: t.ticket_code,
-    createdAt: t.created_at,
-  }));
+  const today = day(now);
+  return rows.map((t) => {
+    const eventDate = day(t.event_date);
+    const checkedInAt = t.checked_in_at || null;
+    return {
+      id: t.id,
+      registrationId: t.registration_id,
+      proposalId: t.proposal_id,
+      clubName: t.club_name,
+      eventName: t.event_name,
+      eventDate,
+      venue: t.venue,
+      ticketCode: t.ticket_code,
+      createdAt: t.created_at,
+      checkedInAt,
+      status: statusOf(eventDate, checkedInAt, today),
+    };
+  });
 }
 
 // Returns { png, filename }.
