@@ -4,6 +4,7 @@ import { ALL_ROLES, ROLES } from './auth/roles';
 import Layout from './components/Layout';
 import LoginPage from './pages/LoginPage';
 import HomePage from './pages/HomePage';
+import EventsPage from './pages/EventsPage';
 import NotificationsPage from './pages/NotificationsPage';
 import ApprovalInboxPage from './pages/ApprovalInboxPage';
 import ApprovalHistoryPage from './pages/ApprovalHistoryPage';
@@ -26,6 +27,7 @@ import MyTicketsPage from './pages/MyTicketsPage';
  */
 const pages = [
   { path: '/home', label: 'Home', roles: ALL_ROLES, element: <HomePage /> },
+  { path: '/events', label: 'Events', roles: [ROLES.STUDENT], element: <EventsPage /> }, // SCP-23
   { path: '/notifications', label: 'Notifications', roles: ALL_ROLES, element: <NotificationsPage /> },
   { path: '/proposals/new', label: 'New Proposal', roles: [ROLES.CLUB_LEAD], element: <ProposalFormPage /> },
   { path: '/proposals/mine', label: 'My Proposals', roles: [ROLES.CLUB_LEAD], element: <MyProposalsPage /> },
