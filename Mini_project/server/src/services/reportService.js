@@ -29,9 +29,15 @@ function toCsv(header, rows) {
 }
 
 // DATE columns may arrive as Date objects or 'YYYY-MM-DD' strings.
+// mysql2 gives a DATE as a Date at LOCAL midnight, so use the local parts.
+// toISOString() would convert to UTC and print the day before in IST.
 function day(value) {
   if (!value) return '';
-  if (value instanceof Date) return value.toISOString().slice(0, 10);
+  if (value instanceof Date) {
+    const mm = String(value.getMonth() + 1).padStart(2, '0');
+    const dd = String(value.getDate()).padStart(2, '0');
+    return `${value.getFullYear()}-${mm}-${dd}`;
+  }
   return String(value).slice(0, 10);
 }
 
@@ -86,4 +92,4 @@ async function attendanceCsv(filters) {
     'Tickets Issued', 'Seats Left'], body);
 }
 
-module.exports = { budgetCsv, attendanceCsv, csvCell };
+module.exports = { budgetCsv, attendanceCsv, csvCell, day };
