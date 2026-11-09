@@ -3,11 +3,12 @@ import { useAuth } from '../auth/AuthContext';
 import { ROLE_LABELS } from '../auth/roles';
 
 // Top bar + role-based menu. The menu is built from the `pages` list in App.jsx,
-// showing only the pages the logged-in role may open.
+// showing only the pages the logged-in role may open. Pages marked hideInMenu
+// (routes with a parameter such as /proposals/:id/history) are never menu links.
 export default function Layout({ pages }) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const menu = pages.filter((p) => p.roles.includes(user.role));
+  const menu = pages.filter((p) => p.roles.includes(user.role) && !p.hideInMenu);
 
   async function handleLogout() {
     await logout();

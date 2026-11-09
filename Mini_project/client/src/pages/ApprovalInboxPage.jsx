@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import api from '../api';
 import { useAuth } from '../auth/AuthContext';
 import { ROLE_LABELS } from '../auth/roles';
@@ -65,6 +66,9 @@ function ProposalCard({ proposal, onDone }) {
         <button onClick={() => decide('REJECT')} disabled={busy} style={{ background: '#b42318' }}>
           Reject
         </button>
+        <Link to={`/proposals/${proposal.id}/history`} style={{ alignSelf: 'center', marginLeft: 4 }}>
+          View history
+        </Link>
       </div>
     </li>
   );
@@ -101,7 +105,7 @@ export default function ApprovalInboxPage() {
   }, [load]);
 
   function handleDone(proposal, newStatus) {
-    setNotice(`"${proposal.eventName}" was ${RESULT_TEXT[newStatus] || 'updated'}.`);
+    setNotice({ id: proposal.id, text: `"${proposal.eventName}" was ${RESULT_TEXT[newStatus] || 'updated'}.` });
     setItems((list) => list.filter((p) => p.id !== proposal.id));
   }
 
@@ -110,7 +114,11 @@ export default function ApprovalInboxPage() {
       <h2 style={{ marginTop: 0 }}>Approval Inbox</h2>
       <p className="muted">Proposals waiting for the {ROLE_LABELS[user.role]}.</p>
 
-      {notice && <p role="status">{notice}</p>}
+      {notice && (
+        <p role="status">
+          {notice.text} <Link to={`/proposals/${notice.id}/history`}>View history</Link>
+        </p>
+      )}
       {error && (
         <p className="error" role="alert">
           {error}
