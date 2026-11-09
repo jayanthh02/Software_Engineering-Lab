@@ -41,10 +41,19 @@ const pages = [
     
   },
   {
+    // Menu entry: asks for a proposal ID, then opens its history.
+    path: '/approvals/history',
+    label: 'Approval History',
+    roles: [ROLES.FACULTY, ROLES.FINANCE, ROLES.DEAN],
+    element: <ApprovalHistoryPage />,
+  },
+  {
+    // One proposal's history. Has a :id, so it is a route only, not a menu link.
     path: '/proposals/:id/history',
     label: 'Approval History',
     roles: [ROLES.FACULTY, ROLES.FINANCE, ROLES.DEAN],
     element: <ApprovalHistoryPage />,
+    hideInMenu: true,
   },
   { path: '/dashboard', label: 'Dashboard', roles: [ROLES.ADMIN, ROLES.CLUB_LEAD], element: <DashboardPage /> },
   { path: '/tickets', label: 'My Tickets', roles: [ROLES.STUDENT], element: <MyTicketsPage /> }, // SCP-24
