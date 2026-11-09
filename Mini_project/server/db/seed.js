@@ -38,7 +38,50 @@ const users = [
     );
   }
 
-  console.log(`Seeded ${clubs.length} clubs and ${users.length} users`);
+  // SCP-23: demo events, so the Events page has something to show.
+  // Each one is an APPROVED proposal with its three approval decisions.
+  // Dates are relative to today, so they always count as upcoming.
+  const idOf = async (email) => {
+    const [rows] = await pool.execute('SELECT id, club_id FROM users WHERE email = ?', [email]);
+    return rows[0];
+  };
+  const approvers = {
+    FACULTY: (await idOf('faculty@college.edu')).id,
+    FINANCE: (await idOf('finance@college.edu')).id,
+    DEAN: (await idOf('dean@college.edu')).id,
+  };
+  const demoEvents = [
+    { lead: 'lead.a@college.edu', name: 'AI and You: Intro Talk', inDays: 7, venue: 'Main Auditorium', seats: 120, budget: 15000, description: 'An easy introduction to AI tools for every branch.' },
+    { lead: 'lead.a@college.edu', name: '24h Campus Hackathon', inDays: 21, venue: 'CSE Block Labs', seats: 60, budget: 80000, description: 'Teams of up to four build a project in 24 hours.' },
+    { lead: 'lead.b@college.edu', name: 'Line Follower Robot Race', inDays: 14, venue: 'Ground Floor Arena', seats: 40, budget: 20000, description: 'Bring your robot or build one at the workshop.' },
+  ];
+
+  let addedEvents = 0;
+  for (const e of demoEvents) {
+    const lead = await idOf(e.lead);
+    const [exists] = await pool.execute(
+      'SELECT id FROM proposals WHERE club_id = ? AND event_name = ?',
+      [lead.club_id, e.name]
+    );
+    if (exists.length > 0) continue;
+
+    const [result] = await pool.execute(
+      `INSERT INTO proposals (club_id, club_lead_id, event_name, event_date, venue,
+                              expected_attendance, budget, description, status)
+       VALUES (?, ?, ?, DATE_ADD(CURDATE(), INTERVAL ? DAY), ?, ?, ?, ?, 'APPROVED')`,
+      [lead.club_id, lead.id, e.name, e.inDays, e.venue, e.seats, e.budget, e.description]
+    );
+    for (const stage of ['FACULTY', 'FINANCE', 'DEAN']) {
+      await pool.execute(
+        `INSERT INTO approval_history (proposal_id, stage, approver_id, decision, comment)
+         VALUES (?, ?, ?, 'APPROVE', 'Approved (demo data)')`,
+        [result.insertId, stage, approvers[stage]]
+      );
+    }
+    addedEvents += 1;
+  }
+
+  console.log(`Seeded ${clubs.length} clubs, ${users.length} users and ${addedEvents} new demo events`);
   await pool.end();
 })().catch((err) => {
   console.error('Seed failed:', err.message);
