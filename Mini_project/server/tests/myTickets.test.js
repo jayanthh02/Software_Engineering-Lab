@@ -25,6 +25,8 @@ function rowFor(ticket, overrides = {}) {
     event_name: 'AI Talk',
     event_date: '2026-12-01',
     venue: 'Main Hall',
+    club_name: 'Coding Club',
+    checked_in_at: null,
     ...overrides,
   };
 }
@@ -52,11 +54,14 @@ describe('My Tickets list (SCP-19)', () => {
           id: 5,
           registrationId: 7,
           proposalId: 42,
+          clubName: 'Coding Club',
           eventName: 'AI Talk',
           eventDate: '2026-12-01',
           venue: 'Main Hall',
           ticketCode: ticket.ticketCode,
           createdAt: '2026-11-01T10:00:00Z',
+          checkedInAt: null,
+          status: expect.stringMatching(/^(UPCOMING|EXPIRED)$/),
         },
       ],
     });
@@ -73,6 +78,33 @@ describe('My Tickets list (SCP-19)', () => {
 
     expect(res.status).toBe(200);
     expect(res.body).toEqual({ items: [] });
+  });
+});
+
+describe('My Tickets status for the ticket page (SCP-24, SCP-F-012)', () => {
+  const myTicketService = require('../src/services/myTicketService');
+  const NOW = new Date(2026, 10, 9, 14, 0); // 9 Nov 2026, local time
+
+  test.each([
+    ['UPCOMING', { event_date: '2026-11-20' }],
+    ['UPCOMING', { event_date: '2026-11-09' }], // the event day itself
+    ['EXPIRED', { event_date: '2026-11-01' }],
+    ['USED', { event_date: '2026-11-01', checked_in_at: '2026-11-01T09:30:00Z' }],
+    ['USED', { event_date: '2026-11-20', checked_in_at: '2026-11-08T09:30:00Z' }],
+  ])('status is %s for %o', async (status, overrides) => {
+    const ticket = ticketService.createTicket(7);
+    ticketRepo.listForStudent.mockResolvedValue([rowFor(ticket, overrides)]);
+
+    const [item] = await myTicketService.listMine(3, NOW);
+    expect(item.status).toBe(status);
+  });
+
+  test('a DATE object keeps its calendar day (no IST shift)', async () => {
+    const ticket = ticketService.createTicket(7);
+    ticketRepo.listForStudent.mockResolvedValue([rowFor(ticket, { event_date: new Date(2026, 11, 1) })]);
+
+    const [item] = await myTicketService.listMine(3, NOW);
+    expect(item.eventDate).toBe('2026-12-01');
   });
 });
 

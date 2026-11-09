@@ -7,10 +7,13 @@ const pool = require('../db');
 const TICKET_SELECT = `
   SELECT t.id, t.registration_id, t.ticket_code, t.signature, t.created_at,
          r.proposal_id, r.student_id,
-         p.event_name, p.event_date, p.venue
+         p.event_name, p.event_date, p.venue,
+         c.name AS club_name, ci.checked_in_at
     FROM tickets t
     JOIN registrations r ON r.id = t.registration_id
-    JOIN proposals p ON p.id = r.proposal_id`;
+    JOIN proposals p ON p.id = r.proposal_id
+    JOIN clubs c ON c.id = p.club_id
+    LEFT JOIN checkins ci ON ci.ticket_id = t.id`;
 
 // Only this student's tickets, newest first.
 async function listForStudent(studentId) {

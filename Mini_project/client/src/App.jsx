@@ -12,6 +12,7 @@ import ProposalFormPage from './pages/ProposalFormPage';
 import EditProposalPage from './pages/EditProposalPage';
 import MyProposalsPage from './pages/MyProposalsPage';
 import DashboardPage from './pages/DashboardPage';
+import MyTicketsPage from './pages/MyTicketsPage';
 /*
  * THE PAGE LIST. Add ONE object here for each page you build.
  * It creates the route AND the menu link, and the menu only shows
@@ -44,6 +45,7 @@ const pages = [
     element: <ApprovalHistoryPage />,
   },
   { path: '/dashboard', label: 'Dashboard', roles: [ROLES.ADMIN, ROLES.CLUB_LEAD], element: <DashboardPage /> },
+  { path: '/tickets', label: 'My Tickets', roles: [ROLES.STUDENT], element: <MyTicketsPage /> }, // SCP-24
 ];
 
 export default function App() {
