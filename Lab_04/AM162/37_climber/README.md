@@ -15,7 +15,7 @@ A working Climber game with:
 
 It has **one deliberate bug** and **three optional features** left as empty functions. You are expected to **analyze**, **interact with an AI assistant**, and **complete/fix** the game to make it fully functional and more interesting.
 
-### **Use an LLM (e.g. ChatGPT or Claude) as your debugging and pair-programming partner for this lab.**
+### **Use an LLM (e.g. ChatGPT) as your debugging and pair-programming partner for this lab.**
 
 ---
 
