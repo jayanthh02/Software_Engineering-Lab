@@ -7,6 +7,7 @@ import HomePage from './pages/HomePage';
 import NotificationsPage from './pages/NotificationsPage';
 import ApprovalInboxPage from './pages/ApprovalInboxPage';
 import ApprovalHistoryPage from './pages/ApprovalHistoryPage';
+import CheckinPage from './pages/CheckinPage';
 import ProposalFormPage from './pages/ProposalFormPage';
 import EditProposalPage from './pages/EditProposalPage';
 import MyProposalsPage from './pages/MyProposalsPage';
@@ -28,6 +29,7 @@ const pages = [
   { path: '/proposals/new', label: 'New Proposal', roles: [ROLES.CLUB_LEAD], element: <ProposalFormPage /> },
   { path: '/proposals/mine', label: 'My Proposals', roles: [ROLES.CLUB_LEAD], element: <MyProposalsPage /> },
   { path: '/proposals/edit', label: 'Edit Rejected', roles: [ROLES.CLUB_LEAD], element: <EditProposalPage /> },
+  { path: '/checkin', label: 'Check-in', roles: [ROLES.CLUB_LEAD], element: <CheckinPage /> }, // SCP-25
   {
     path: '/approvals',
     label: 'Approval Inbox',
